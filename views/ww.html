@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta HTTP-EQUIV="EXPIRES" CONTENT="-1">
+		<title>Computing Science 309 Warehouse Wars</title>
+		<script language="javascript" src="../model/ww.js" > </script>
+
+		<script> 
+			stage=null;
+			// SOME GLUE CODE CONNECTING THIS PAGE TO THE STAGE
+			interval=null;
+			score = 0;
+			timeBonus = 600;
+			numMonsters;
+			
+			function setupGame(){
+				stage=new Stage(20,20,"stage");
+				stage.initialize();
+				score = 0;
+				timeBonus = 600;
+				numMonsters = stage.getNumMonsters();
+			}
+			
+			function update(){
+				//update score
+				countScore();
+				if (!stage.alivePlayer() ){
+				//game over condition
+					gameOver();
+				} else if (stage.winCondition()){
+					winGame();
+				}
+				//step
+				stage.step();
+			}
+			
+			function winGame(){
+				clearInterval(interval);
+				interval = null;
+				score += timeBonus;
+				alert("Congratulations!\nYour score is: "+score);
+				setupGame();
+				startGame();
+			}
+			
+			function startGame(){
+				// YOUR CODE GOES
+				document.onkeydown = keyControl;
+				interval=setInterval(function() {update()},1000);
+			}
+			
+			function gameOver(){
+				clearInterval(interval);
+				interval = null;
+				alert("Game over!!\nYour score is: "+score);
+				setupGame();
+				startGame();
+			}
+			
+			function keyControl(e){
+				if (interval !== null){
+					if (e.keyCode<41){
+						if (e.keyCode === 37){
+							//left 37
+							stage.movePlayer(0, -1);
+						} else if (e.keyCode === 39){
+							//right 39
+							stage.movePlayer(0, 1);
+						} else if (e.keyCode === 38){
+							//up 38
+							stage.movePlayer(-1, 0);
+						} else if (e.keyCode === 40){
+							//down 40
+							stage.movePlayer(1, 0);e
+						}
+					} else if (e.keyCode<91){
+						if (e.keyCode=== 81){
+							//NW
+							stage.movePlayer(-1,-1);
+						} else if (e.keyCode === 87){
+							//N
+							stage.movePlayer(-1,0);	
+						}else if (e.keyCode === 69){
+							//NE
+							stage.movePlayer(-1,1);
+						}else if (e.keyCode === 68){
+							//E
+							stage.movePlayer(0,1);
+						}else if (e.keyCode === 65){
+							//W
+							stage.movePlayer(0,-1);
+							
+						}else if (e.keyCode === 90){
+							//SW?
+							stage.movePlayer(1,-1);
+						}else if (e.keyCode === 88){
+							//S
+							stage.movePlayer(1,0);
+						}else if (e.keyCode === 67){
+							//SE?
+							stage.movePlayer(1,1);
+						}
+					}
+				}
+			}
+			
+			function mouseControl(i){
+				if (interval !== null){
+				
+					if (i==0){
+						//north-west up, left
+						stage.movePlayer(-1,-1);	
+					} else if (i==1){
+						//move north
+						stage.movePlayer(-1,0);	
+					} else if (i==2){
+						//move north-east		
+						stage.movePlayer(-1,1);
+					} else if (i==3){
+						//move west		
+						stage.movePlayer(0,-1);
+					} else if (i==4){
+						//move east
+						stage.movePlayer(0,1);	
+					} else if (i==5){
+						//move south-west		
+						stage.movePlayer(1,-1);
+					} else if (i==6){
+						//move south	
+						stage.movePlayer(1,0);
+					} else if (i==7){
+						//move south-east
+						stage.movePlayer(1,1);
+					}
+				}
+			}
+			
+			function pauseGame(){
+				if(interval===null){
+					document.myform.button1.value = "Pause"
+					startGame();
+				} else {
+					document.myform.button1.value="Start";
+					clearInterval(interval); // interval is a global, so we can stop it
+					interval=null;
+				}
+			}
+			
+			function countScore(){
+				if (timeBonus>0){
+					timeBonus--;
+				}
+				if (numMonsters > stage.getNumMonsters()){
+					score+=(numMonsters-stage.getNumMonsters())*100;
+					numMonsters = stage.getNumMonsters();
+				}
+				document.getElementById('number').innerHTML=score;
+				document.getElementById('bonus').innerHTML=timeBonus;
+				/*if monster dies score = score +100*/
+			
+			}
+			
+		</script>
+		<style>
+			<!-- /* style parts of the legend, the controls and the elements in the stage appropriately */ -->
+			
+		</style>
+	</head>
+	<body bgcolor=ffffff onload="setupGame(); startGame();" >
+		<center>
+			<h1>Warehouse Wars</h1>
+			<table>
+				<tr>
+				<td><table><tr><td>
+				<td>Your Score: <span id="number" style="color:blue">0</span><td>
+				<td>Time Bonus: <span id="bonus" style="color:red">1000</span><td>
+				</td></tr></table></td>
+				<!-- <td><button type="button" value = "Pause" onclick="pauseGame()" ></button></td> -->
+				<form name = "myform">
+				<input type = "button" name = "button1" id = "button1" value = "Pause" onclick = "pauseGame()">
+				</form>
+				</tr>
+				<tr>
+					<td> <div id="stage"> </div></td> 
+					<td>
+						<center>
+							<h2>Legend</h2>
+							<table class="legend">
+								<tr>
+									<td> <img src="icons/blank.gif" id="blankImage" /> </td>
+									<td> <img src="icons/emblem-package-2-24.png" id="boxImage" /> </td>
+									<td> <img src="icons/face-cool-24.png" id="playerImage" /> </td>
+									<td> <img src="icons/face-devil-grin-24.png" id="monsterImage" /> </td>
+									<td> <img src="icons/wall.jpeg" id="wallImage" /> </td>
+								</tr>
+								<tr>
+									<td> Empty <br/> Square </td>
+									<td> Box </td>
+									<td> Player </td>
+									<td> Monster </td>
+									<td> Wall </td>
+								</tr>
+							</table>
+							<h2>Controls</h2>
+							<table class="controls">
+								<tr>
+									<td><img id="arrow0" src="icons/north_west.svg" onclick="mouseControl(0);" /></td>
+									<td><img id="arrow1" src="icons/north.svg" onclick="mouseControl(1);"/></td>
+									<td><img id="arrow2" src="icons/north_east.svg" onclick="mouseControl(2);"/></td>
+								</tr>
+								<tr>
+									<td><img id="arrow3" src="icons/west.svg" onclick="mouseControl(3);"/></td>
+									<td>&nbsp;</td>
+									<td><img id="arrow4" src="icons/east.svg" onclick="mouseControl(4);"/></td>
+								</tr>
+								<tr>
+									<td><img id="arrow5" src="icons/south_west.svg" onclick="mouseControl(5);" /></td>
+									<td><img id="arrow6" src="icons/south.svg" onclick="mouseControl(6);"/></td>
+									<td><img id="arrow7" src="icons/south_east.svg" onclick="mouseControl(7);"/></td>
+								</tr>
+							</table>
+						</center>
+					</td>
+				</tr>
+			</table>
+		</center>
+	</body>
+</html>
+
